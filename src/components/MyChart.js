@@ -4,7 +4,8 @@ import 'chartjs-plugin-zoom';
 import axios from "axios";
 
 const MyChart = () => {
-  const [flag, setFlag] = useState(0);
+  const [dates, setDates] = useState(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
+  const [history, setHistory] = useState([2112, 2343, 2545, 3423, 2365, 1985, 987]);
   const chartRef = useRef(null);
   let chartInstance = null;
 
@@ -13,10 +14,10 @@ const MyChart = () => {
       chartInstance = new Chart(chartRef.current, {
         type: 'line',
         data: {
-          labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+          labels: dates,
           datasets: [{
             label: 'Traffic',
-            data: [2112, 2343, 2545, 3423, 2365, 1985, 987],
+            data: history,
           }],
         },
         options: {
@@ -46,7 +47,7 @@ const MyChart = () => {
         chartInstance.destroy();
       }
     };
-  }, [chartRef]);
+  }, [chartRef, dates, history]);
 
   const getHistoricalData = async () => {
     let username = process.env.REACT_APP_USER_NAME;
@@ -68,8 +69,14 @@ const MyChart = () => {
 
     let apiReturn = await axios.get(url, config)
       .then((response) => {
-        console.log('here: ', response);
-        return response;
+        console.log('here: ', response.data.data[0]);
+        setDates(response.data.data[0]);
+        setHistory(response.data.data[1]);
+        if (chartInstance) {
+          chartInstance.data.labels = response.data.data[0];
+          chartInstance.data.datasets[0].data = response.data.data[1];
+          chartInstance.update();
+        }
       })
       .catch(err => console.log(err));
     return apiReturn;
@@ -87,7 +94,8 @@ const MyChart = () => {
   }
 
   return (
-    <div className="mx-auto w-3/5 overflow-hidden items-center" onWheel={handleWheel}>
+    <div className="mx-auto w-3/5 overflow-hidden items-center">
+      {/* onWheel={handleWheel} */}
       <canvas ref={chartRef} />
       <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-5" onClick={()=>handleClick()}>
         Load Data
