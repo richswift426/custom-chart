@@ -5,7 +5,9 @@ import axios from "axios";
 
 const MyChart = () => {
   const [dates, setDates] = useState(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
-  const [history, setHistory] = useState([2112, 2343, 2545, 3423, 2365, 1985, 987]);
+  const [history, setHistory] = useState([]);
+  const [history1, setHistory1] = useState([]);
+  const [history2, setHistory2] = useState([]);
   const chartRef = useRef(null);
   let chartInstance = null;
 
@@ -15,10 +17,20 @@ const MyChart = () => {
         type: 'line',
         data: {
           labels: dates,
-          datasets: [{
-            label: 'Traffic',
-            data: history,
-          }],
+          datasets: [
+            {
+              label: 'Traffic',
+              data: history
+            },
+            {
+              label: 'Traffic1',
+              data: history1
+            },
+            {
+              label: 'Traffic2',
+              data: history2
+            }
+          ],
         },
         options: {
           plugins: {
@@ -36,6 +48,12 @@ const MyChart = () => {
                 },
                 mode: 'xy',
               },
+            },
+          },
+          elements: {
+            line: {
+              tension: 0.1,
+              cubicInterpolationMode: 'monotone',
             },
           },
         },
@@ -62,8 +80,8 @@ const MyChart = () => {
         // 'Access-Control-Allow-Origin': `*`
       },
       params: {
-        start: '2023-05-28T17:53:44.344Z',
-        end: '2023-05-28T18:55:44.344Z'
+        start: '2023-05-29T17:53:44.344Z',
+        end: '2023-05-29T18:53:46.344Z'
       }
     };
 
@@ -72,9 +90,11 @@ const MyChart = () => {
         console.log('here: ', response.data.data[0]);
         setDates(response.data.data[0]);
         setHistory(response.data.data[1]);
+        setHistory1(response.data.data[2]);
+        setHistory2(response.data.data[3]);
         if (chartInstance) {
           chartInstance.data.labels = response.data.data[0];
-          chartInstance.data.datasets[0].data = response.data.data[1];
+          chartInstance.data.datasets[0].data = response.data.data[3];
           chartInstance.update();
         }
       })
