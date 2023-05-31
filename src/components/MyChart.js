@@ -4,12 +4,7 @@ import historyService from "../services/chartApi";
 import LoadingSpinner from "./LoadingSpinner";
 
 const ZoomableChart = () => {
-  const [dates, setDates] = useState([]);
-  const [history, setHistory] = useState([]);
-  const [history1, setHistory1] = useState([]);
-  const [history2, setHistory2] = useState([]);
   const [spinner, setSpinner] = useState(false);
-
   const [options, setOptions] = useState({
     chart: {
       id: "zoomable-chart",
@@ -39,10 +34,6 @@ const ZoomableChart = () => {
     .then(
       result => {
         console.log('result: ', result);
-        // setDates(result.data.data[0]);
-        // setHistory(result.data.data[1]);
-        // setHistory1(result.data.data[2]);
-        // setHistory2(result.data.data[3]);
         setOptions({
           chart: {
             id: "zoomable-chart",
