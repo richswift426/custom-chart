@@ -1,7 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Chart from 'chart.js/auto';
 import 'chartjs-plugin-zoom';
-import axios from "axios";
+import historyService from "../services/chartApi";
+import LoadingSpinner from "./LoadingSpinner";
 
 const MyChart = () => {
   let chartInstance = null;
@@ -10,6 +11,8 @@ const MyChart = () => {
   const [history, setHistory] = useState([]);
   const [history1, setHistory1] = useState([]);
   const [history2, setHistory2] = useState([]);
+  const [spinner, setSpinner] = useState(false);
+  
   const chartRef = useRef(null);
 
   useEffect(() => {
@@ -73,39 +76,19 @@ const MyChart = () => {
     };
   }, [chartRef, dates, history, history1, history2]);
 
-  const getHistoricalData = async () => {
-    let username = process.env.REACT_APP_USER_NAME;
-    let password = process.env.REACT_APP_PASSWORD;
-    const auth = btoa(`${username}:${password}`);
-    let url = `${process.env.REACT_APP_API_HOST}/rest/0.1/unit/e661640843792f2d/sensor/3,50,60/history`;
-
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Basic ${auth}`,
-      },
-      params: {
-        start: '2023-05-29T17:53:44.344Z',
-        end: '2023-05-29T18:53:46.344Z'
+  const getHistoryData = async () => {
+    await historyService.getHistoricalData()
+    .then(
+      result => {
+        console.log('result: ', result);
+        setDates(result.data.data[0]);
+        setHistory(result.data.data[1]);
+        setHistory1(result.data.data[2]);
+        setHistory2(result.data.data[3]);
+        setSpinner(false);
       }
-    };
-
-    let apiReturn = await axios.get(url, config)
-      .then((response) => {
-        console.log('here: ', response.data.data[0]);
-        setDates(response.data.data[0]);
-        setHistory(response.data.data[1]);
-        setHistory1(response.data.data[2]);
-        setHistory2(response.data.data[3]);
-        if (chartInstance) {
-          chartInstance.data.labels = response.data.data[0];
-          chartInstance.data.datasets[0].data = response.data.data[3];
-          chartInstance.update();
-        }
-      })
-      .catch(err => console.log(err));
-    return apiReturn;
-  };
+    )
+  }
 
   const handleWheel = (event) => {
     event.preventDefault();
@@ -115,14 +98,15 @@ const MyChart = () => {
   };
 
   const handleClick = () => {
-    getHistoricalData();
+    setSpinner(true);
+    getHistoryData();
   }
 
   return (
     <div className="mx-auto w-3/5 overflow-hidden">
       <canvas ref={chartRef} />
-      <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-5" onClick={()=>handleClick()}>
-        Load Data
+      <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-5 w-28 flex justify-center items-center" onClick={()=>handleClick()}>
+        {spinner ? <LoadingSpinner /> : "Load Data"}
       </button>
     </div>
   );
