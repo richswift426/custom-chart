@@ -36,14 +36,3 @@
     transform: rotate(360deg);
   }
 }
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.animate-spin {
-  animation-name: spin;
-  animation-duration: 1000ms;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-}
