@@ -4,12 +4,13 @@ import 'chartjs-plugin-zoom';
 import axios from "axios";
 
 const MyChart = () => {
-  const [dates, setDates] = useState(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
+  let chartInstance = null;
+
+  const [dates, setDates] = useState([]);
   const [history, setHistory] = useState([]);
   const [history1, setHistory1] = useState([]);
   const [history2, setHistory2] = useState([]);
   const chartRef = useRef(null);
-  let chartInstance = null;
 
   useEffect(() => {
     if (chartRef.current) {
@@ -34,6 +35,11 @@ const MyChart = () => {
         },
         options: {
           plugins: {
+            title: {
+              display: true,
+              text: 'Hello'
+            },
+            zoomEnabled: true,
             zoom: {
               pan: {
                 enabled: true,
@@ -52,7 +58,7 @@ const MyChart = () => {
           },
           elements: {
             line: {
-              tension: 0.1,
+              tension: 0.4,
               cubicInterpolationMode: 'monotone',
             },
           },
@@ -65,7 +71,7 @@ const MyChart = () => {
         chartInstance.destroy();
       }
     };
-  }, [chartRef, dates, history]);
+  }, [chartRef, dates, history, history1, history2]);
 
   const getHistoricalData = async () => {
     let username = process.env.REACT_APP_USER_NAME;
@@ -77,7 +83,6 @@ const MyChart = () => {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Basic ${auth}`,
-        // 'Access-Control-Allow-Origin': `*`
       },
       params: {
         start: '2023-05-29T17:53:44.344Z',
@@ -114,8 +119,7 @@ const MyChart = () => {
   }
 
   return (
-    <div className="mx-auto w-3/5 overflow-hidden items-center">
-      {/* onWheel={handleWheel} */}
+    <div className="mx-auto w-3/5 overflow-hidden">
       <canvas ref={chartRef} />
       <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-5" onClick={()=>handleClick()}>
         Load Data
