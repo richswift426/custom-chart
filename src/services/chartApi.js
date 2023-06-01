@@ -22,7 +22,10 @@ class historyService {
       .then((response) => {
         return response;
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        console.log(err);
+        return "error";
+      });
     return historyData;
   }
 }

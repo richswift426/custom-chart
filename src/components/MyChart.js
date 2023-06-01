@@ -61,6 +61,11 @@ const ZoomableChart = () => {
     .then(
       result => {
         console.log('result: ', result);
+        if(result == "error") {
+          alert("something went wrong!");
+          setSpinner(false);
+          return;
+        }
         setOptions({
           chart: {
             id: "zoomable-chart",
